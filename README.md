@@ -1,4 +1,4 @@
-# tracers_python_load
+# tracers_py_load
 This is a repository containing functions that pull and plot data for the TRACERS' instrument suite. There are also routines to obtain ephemeris and attitude data.
 
 The structure of this repository is relatively simple. Within the "lib" folder, there are subfolders for each instrument, as well as a "general" folder that contains miscellaneous routines.
