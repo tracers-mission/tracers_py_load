@@ -66,8 +66,9 @@ def retrieve_msc_data(year,month,day,spacecraft,level,local_dir=None):
     idx = []
     for i in range(len(all_strings)):
         string_name = all_strings[i].get('href')
-        if ds in string_name and level in string_name and 'msc' in string_name:
-            idx.append(i)
+        if string_name is not None:
+            if ds in string_name and level in string_name and 'msc' in string_name:
+                idx.append(i)
     if len(idx) > 0:
         day_file = all_strings[idx[-1]].get('href')
         sys.stdout.write('\nDownloading '+f'{day_file}'+'\n')

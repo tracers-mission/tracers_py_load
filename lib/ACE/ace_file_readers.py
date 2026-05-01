@@ -2,6 +2,7 @@ import cdflib
 import datetime as dt
 import numpy as np
 import pandas as pd
+from lib.general.misc_functions import determine_datetime_type 
 
 # ***********************************************************************************
 

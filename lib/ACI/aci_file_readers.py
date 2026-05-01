@@ -2,6 +2,7 @@ import cdflib
 import datetime as dt
 import numpy as np
 import pandas as pd
+from lib.general.misc_functions import determine_datetime_type 
 
 def read_aci_l2_files(files2load, start=None, end=None):
     """
@@ -38,14 +39,9 @@ def read_aci_l2_files(files2load, start=None, end=None):
         def_var = f'{spacecraft}_l2_aci_tscs_def'
         ion_def = cdf_file[def_var]
 
-        # Counts (T x E x A)
-        count_var = f'{spacecraft}_l2_aci_tscs_def_sorted_counts'
-        ion_counts = cdf_file[count_var]
-
         
         data_dict['def'].append(ion_def)
         data_dict['dt'].append(dts)
-        data_dict['counts'].append(ion_counts)
         data_dict['utc'].append(utcs)
 
     data_dict['anode']=anode_angle
@@ -63,8 +59,7 @@ def read_aci_l2_files(files2load, start=None, end=None):
 
     times = np.zeros(t_tot)
     defs = np.zeros((t_tot,47,16))
-    counts = np.zeros((t_tot,47,16))
-    bg_counts = np.zeros((t_tot,47,16))
+
     
     for k in range(n_files):
         if k == 0:
@@ -78,7 +73,6 @@ def read_aci_l2_files(files2load, start=None, end=None):
 
         times[indices[0]:indices[1]] = data_dict['utc'][k]
         defs[indices[0]:indices[1],:,:] = data_dict['def'][k]
-        counts[indices[0]:indices[1],:,:] = data_dict['counts'][k]
 
     nan_idx = list(np.where(np.isfinite(times) == False)[0])
 
@@ -115,7 +109,6 @@ def read_aci_l2_files(files2load, start=None, end=None):
     aci_dict = {}
     aci_dict['energy'] = data_dict['energy']
     aci_dict['def'] = defs[time_mask,:,:]
-    aci_dict['counts'] = counts[time_mask,:,:]
     aci_dict['UTC'] = times[time_mask]
     aci_dict['anode'] = data_dict['anode']
     aci_dict['DT'] = []

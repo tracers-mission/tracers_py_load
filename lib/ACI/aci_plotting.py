@@ -36,8 +36,6 @@ def plot_aci_l2(aci_dict,anode=None,anode_sum=None,ax=None,cmap=None,echannel=No
     
     if units.lower() == 'def':
         particle_data = aci_dict['def']
-    if units.lower() == 'counts':
-        particle_data = aci_dict['counts']
 
     if cmap is None:
         cmap = cc.cm['CET_R3']
@@ -141,8 +139,7 @@ def plot_aci_l2(aci_dict,anode=None,anode_sum=None,ax=None,cmap=None,echannel=No
         yscale = 'linear'
         if units.lower() == 'def':
             unit_label = 'Differential Energy Flux\n'+r'[eV/(eV cm$^2$ s sr)]'
-        if units.lower() == 'counts':
-            unit_label = 'Counts [#]'
+
         
     elif echannel is None and anode is not None:
         particle_data_new = particle_data_new[:,:,anode]
@@ -154,8 +151,7 @@ def plot_aci_l2(aci_dict,anode=None,anode_sum=None,ax=None,cmap=None,echannel=No
         yscale = 'log'
         if units.lower() == 'def':
             unit_label = 'Differential Energy Flux\n'+r'[eV/(eV cm$^2$ s sr)]'
-        if units.lower() == 'counts':
-            unit_label = 'Counts [#]'
+
         
     elif anode_sum is True:
         dphi = np.deg2rad(10)
@@ -170,9 +166,7 @@ def plot_aci_l2(aci_dict,anode=None,anode_sum=None,ax=None,cmap=None,echannel=No
         yscale = 'log'
         if units.lower() == 'def':
             unit_label = 'Angle-Integrated\nDifferential Energy Flux\n'+r'[eV/(eV cm$^2$ s)]'
-        if units.lower() == 'counts':
-            unit_label = 'Counts [#]'
-            
+
     elif energy_avg is True:
         particle_data_new = np.nanmean(particle_data_new, axis=1)
         xx, yy = np.meshgrid(dt_new, aci_dict['anode'])
@@ -181,8 +175,7 @@ def plot_aci_l2(aci_dict,anode=None,anode_sum=None,ax=None,cmap=None,echannel=No
         yscale = 'linear'    
         if units.lower() == 'def':
             unit_label = 'Differential Energy Flux\n'+r'[eV/(eV cm$^2$ sr s)]'
-        if units.lower() == 'counts':
-            unit_label = 'Counts [#]'        
+     
     else:
         particle_data_new = np.nanmean(particle_data_new, axis=2)
         xx, yy = np.meshgrid(dt_new, aci_dict['energy'])
@@ -191,8 +184,7 @@ def plot_aci_l2(aci_dict,anode=None,anode_sum=None,ax=None,cmap=None,echannel=No
         yscale = 'log'
         if units.lower() == 'def':
             unit_label = 'Differential Energy Flux\n'+r'[eV/(eV cm$^2$ s sr)]'
-        if units.lower() == 'counts':
-            unit_label = 'Counts [#]'
+
 
     if time_res is not None:
         ax = time_res_f(ax, dt_new, time_res)

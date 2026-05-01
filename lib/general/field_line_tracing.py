@@ -19,7 +19,7 @@ def plot_geopack_trace(r, yyyymmdd, hh, az=70, elev=35,
      model: Magnetic field model to use. Options: 'T89'|'T96'|'T01'|'TS05'
      return_full: If true, return (axis, trace) where trace is trace object.
                   Useful for getting the footprints and equatorial local time
-     labels: Associate lines with labels if true. List of strings of length N
+     labels: Associate lines with labels. List of strings of length N need to be input to label each line.
      legend: Place legend on axes. 
 
     '''

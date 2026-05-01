@@ -1,4 +1,5 @@
 from lib.ACE.ace_data_loading import *
+import copy
 import datetime as dt
 import matplotlib.pyplot as plt
 from matplotlib import colors, ticker

@@ -64,15 +64,16 @@ def retrieve_efi_data(year,month,day,spacecraft,level,local_dir=None,data_prod=N
         idx_vdc = []
         for i in range(len(all_strings)):
             string_name = all_strings[i].get('href')
-            if ds in string_name:
-                if 'eac' in string_name:
-                    idx_eac.append(i)
-                elif 'ehf' in string_name:
-                    idx_ehf.append(i)
-                elif 'hsk' in string_name:
-                    idx_hsk.append(i)
-                elif 'vdc' in string_name:
-                    idx_vdc.append(i)
+            if string_name is not None:
+                if ds in string_name:
+                    if 'eac' in string_name:
+                        idx_eac.append(i)
+                    elif 'ehf' in string_name:
+                        idx_ehf.append(i)
+                    elif 'hsk' in string_name:
+                        idx_hsk.append(i)
+                    elif 'vdc' in string_name:
+                        idx_vdc.append(i)
     
         
         # Retrieve EAC ----------------------------------------------

@@ -26,6 +26,27 @@ def _read_efi_l2_eac(file, start, end):
     return ddict
 
 
+
+
+def _read_efi_l2_edc(file, start, end):
+
+    sc = 'ts'+(file.split('ts')[1]).split('_')[0]
+    cdf = pycdf.CDF(file)
+    start_ind = bisect.bisect_left(cdf['Epoch'], start)
+    end_ind = bisect.bisect_left(cdf['Epoch'], end)
+    
+    ddict = {}
+    ddict['Epoch'] = cdf['Epoch'][start_ind:end_ind]
+    ddict[f'{sc}_l2_edc_TSCS'] = cdf[f'{sc}_l2_edc_TSCS'][start_ind:end_ind,:]
+    ddict[f'{sc}_l2_edc_fac'] = cdf[f'{sc}_l2_edc_fac'][start_ind:end_ind,:]
+    ddict[f'{sc}_l2_edc_fvc'] = cdf[f'{sc}_l2_edc_fvc'][start_ind:end_ind,:]
+    ddict[f'{sc}_l2_edc_gei'] = cdf[f'{sc}_l2_edc_gei'][start_ind:end_ind,:]
+
+    return ddict
+
+
+
+
 def _read_efi_l2_ehf(file, start, end):
     """
     Creates dict from cdf file usable for plotting for high frequency data.
