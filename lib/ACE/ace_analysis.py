@@ -204,6 +204,8 @@ def plot_epad_snapshot(l3_data,ax=None,units=None,cmap=None,n_levels=None,time_a
     ax.set_ylabel(r'$v_{\perp}$ [m/s]')
     cbax = ax.inset_axes([1.03,0,0.08,1],transform=ax.transAxes)
     ax.set_title(title)
+    ax.set_aspect('equal')
+
     plt.colorbar(cm,cax=cbax,ticks=cbar_ticks,label=zlabel)
     return ax
     

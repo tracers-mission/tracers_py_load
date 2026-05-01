@@ -34,6 +34,8 @@ def retrieve_ead_data(year,month,day,spacecraft,local_dir=None,username=None,pas
             os.mkdir(f'{cwd}/data/TS{spacecraft}/EAD/{year}/{month}') 
 
     if username is not None:
+
+        # ---------------- Check definitive first
         base_url = f'https://tracers-portal.physics.uiowa.edu/teams/flight/SOC/TS{spacecraft}/ead/def'
         date_url = f'{base_url}/'
     
@@ -45,8 +47,9 @@ def retrieve_ead_data(year,month,day,spacecraft,local_dir=None,username=None,pas
         idx = []
         for i in range(len(all_strings)):
             string_name = all_strings[i].get('href')
-            if ds in string_name:
-                idx.append(i)
+            if string_name is not None:
+                if ds in string_name:
+                    idx.append(i)
         if len(idx) > 0:
             day_file = all_strings[idx[-1]].get('href')
             sys.stdout.write('\nDownloading '+f'{day_file}'+'\n')
@@ -58,7 +61,36 @@ def retrieve_ead_data(year,month,day,spacecraft,local_dir=None,username=None,pas
             
         else:
             ymd = f'{year}-{month}-{day}'
-            print(f"No EAD {spacecraft.upper()} files for {ymd}!")
+            print(f"No defintive EAD TS{spacecraft} files for {ymd}!")
+
+
+            print("Checking predictive...")
+            date_url = f'https://tracers-portal.physics.uiowa.edu/teams/flight/SOC/TS{spacecraft}/ead/predict/'
+            page = requests.get(date_url,auth=(username,password))
+            data = page.text
+            soup = BeautifulSoup(data,"html.parser")
+            ds = f'{year}{month}{day}'
+            all_strings = soup.find_all('a')
+            idx = []
+            for i in range(len(all_strings)):
+                string_name = all_strings[i].get('href')
+                if string_name is not None:
+                    if ds in string_name:
+                        idx.append(i)
+            if len(idx) > 0:
+                day_file = all_strings[idx[-1]].get('href')
+                sys.stdout.write('\nDownloading '+f'{day_file}'+'\n')
+                file_url_path = date_url + '/' + day_file
+                local_file_path = local_dir + '/' + day_file 
+                r = requests.get(file_url_path,auth=(username,password))
+                with open(local_file_path,'wb') as df:
+                    df.write(r.content)    
+            else:
+                print(f"No predictive EAD TS{spacecraft} files for {ymd}!")
+    
+
+
+            
     else:
         #  ** 2026-04-15: currently, EAD files are only available on the team portal, not public facing! **
         print('No publicly available EAD files!')
@@ -129,7 +161,7 @@ class EADload(getTime):
             else:
                 ead_download = retrieve_ead_data(year,month,day,self.spacecraft, local_dir=local_dir, \
                                                  username=username, password=password)
-                f2find = f'{date_dir}/ts{self.spacecraft}_def_ead_**{date_string}**.cdf'
+                f2find = f'{date_dir}/ts{self.spacecraft}**_ead_**{date_string}**.cdf'
                 out = os.popen(f'ls -rt {f2find}').read()
                 ead_local_files = out.split('\n')[0:-1]
                 if len(ead_local_files) > 0:
