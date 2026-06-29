@@ -217,6 +217,13 @@ def plot_ace_l2(ace_dict,anode=None,anode_sum = None,ax=None,cmap=None,echannel=
             
     if time_res is not None:
         ax = time_res_f(ax, dt_new, time_res)
+
+     
+
+
+
+
+
     
     if zlim is not None:
         min_c = zlim[0]
@@ -261,7 +268,7 @@ def plot_ace_l3(ace_dict,ax=None,cmap=None,echannel=None,energy_avg=None,energy_
     cmap: colomarp name
     echannel: integer number of energy channel you wish to plot
     energy_avg: True of False; indicates whether you want to average over all energy channels
-    energy_bins2avg: list of energy bin integers you want to average over
+    energy_bins2avg: range of energies you wish to average over (i.e. energy_bins2avg=[200,3000] for energies between 200 eV and 3000 eV)
     energy_sum: True or False; indicates whether you want to sum over all energy channels
     pa: pitch angle bin integer number you wish to plot
     pa_avg: True or False; indicates whether or not you want to average over all pitch angle bins
@@ -402,8 +409,12 @@ def plot_ace_l3(ace_dict,ax=None,cmap=None,echannel=None,energy_avg=None,energy_
             zlabel = 'Distribution Function\n'+r'[s$^3$/m$^6$]'  
 
     elif energy_bins2avg is not None:
-        pdn = particle_data_new[:,energy_bins2avg,:]
-        energy_values = ace_dict['energy'][energy_bins2avg]
+        energies = ace_dict['energy']
+        mm = (energies >= energy_bins2avg[0])&(energies <= energy_bins2avg[1])
+        energy_bins = np.where(mm)[0]
+        
+        pdn = particle_data_new[:,energy_bins,:]
+        energy_values = ace_dict['energy'][energy_bins]
         e0 = np.amin(energy_values)
         ef = np.amax(energy_values)
 
@@ -532,8 +543,8 @@ def plot_ace_l3(ace_dict,ax=None,cmap=None,echannel=None,energy_avg=None,energy_
     
     im = ax.pcolormesh(xx, yy, particle_data_new.T, cmap=cmap,shading='nearest',\
                   norm=colors.LogNorm(vmin=0.9*min_c,vmax=1.1*max_c))
-    cbax = ax.inset_axes([1.01,0,0.03,1],transform=ax.transAxes)
-    cb = plt.colorbar(im, cax=cbax, label=zlabel)
+    #cbax = ax.inset_axes([1.01,0,0.03,1],transform=ax.transAxes)
+    #cb = plt.colorbar(im, cax=cbax, label=zlabel)
     ax.set_xlim([ace_dict['start_time'], ace_dict['end_time']])
     ax.set_ylabel(ylabel)
     ax.set_yscale(yscale)

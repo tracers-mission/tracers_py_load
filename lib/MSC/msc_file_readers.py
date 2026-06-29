@@ -2,7 +2,7 @@ import cdflib
 import datetime as dt
 import numpy as np
 import pandas as pd
-from lib.general.misc_functions import determine_datetime_type 
+from ..general.misc_functions import determine_datetime_type 
 
 def read_msc_l2_files(files2load,start=None,end=None):
     """
@@ -15,7 +15,7 @@ def read_msc_l2_files(files2load,start=None,end=None):
     """
     spacecraft = (files2load[0].split('/')[-1]).split('_')[0]
     data_dict = {'utc':[],'dt':[],'flags':[],'bac_fac':[],\
-                'bac_tscs':[]}
+                'bac_tscs':[], 'cal_freq':[],'imag_cal':[],'real_cal':[]}
     for i in range(len(files2load)):
         msc_file = files2load[i]
         print(msc_file)
@@ -35,6 +35,14 @@ def read_msc_l2_files(files2load,start=None,end=None):
 
         # Flags
         flags = msc_cdf['flags']
+
+        # Calibration Table
+        calibration_table = msc_cdf[f'{spacecraft}_msc_calibration']
+        real_cal = calibration_table[:,0]
+        imag_cal = calibration_table[:,1]
+
+        # Calibration Frequency
+        cal_freq = msc_cdf['cal_frequency']
         
         # --- Flattening time series since packets are sent down in 1024 ---
         
@@ -56,17 +64,16 @@ def read_msc_l2_files(files2load,start=None,end=None):
         utcs = cdflib.cdfepoch.unixtime(msc_flat_times)
         dts = [pd.Timestamp(x) for x in msc_datetimes]
 
-        # raw_epoch = cdflib.cdfepoch.to_datetime(epoch)
-        # raw_epoch_dt = [pd.Timestamp(x) for x in raw_epoch]
-        # raw_epoch_utc = [(x - pd.Timestamp('1970-01-01'))/pd.Timedelta('1s') for x in raw_epoch_dt]
-
         data_dict['utc'].append(utcs)
         data_dict['dt'].append(dts)
         data_dict['flags'].append(flags)
         data_dict['bac_fac'].append(msc_bac_fac)
         data_dict['bac_tscs'].append(msc_bac_tscs)
 
-
+        data_dict['cal_freq'] = cal_freq
+        data_dict['imag_cal'] = imag_cal
+        data_dict['real_cal'] = real_cal
+        
     # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     # RESHAPING ARRAYS BASED ON MULTIPLE FILES  
 
@@ -81,7 +88,6 @@ def read_msc_l2_files(files2load,start=None,end=None):
     times = np.zeros(t_tot)
     bac_tscs_vals = np.zeros((t_tot,3))
     bac_fac_vals = np.zeros((t_tot,3))
-    # location_vals = np.zeros((t_tot/1024.,3))
     
     for k in range(n_files):
         if k == 0:
@@ -129,15 +135,21 @@ def read_msc_l2_files(files2load,start=None,end=None):
     time_mask = (times >= start_time)&(times <= end_time) 
 
     msc_dict = {}
-    msc_dict['bac_tscs'] = bac_tscs_vals[time_mask,:]
-    msc_dict['bac_fac'] = bac_fac_vals[time_mask,:]
     msc_dict['UTC'] = times[time_mask]
     msc_dict['DT'] = []
     for elem in msc_dict['UTC']:
         msc_dict['DT'].append(dt.datetime.fromtimestamp(elem,dt.UTC))
     msc_dict['start_time'] = start
     msc_dict['end_time'] = end
-    msc_dict['spacecraft'] = spacecraft    
+    msc_dict['spacecraft'] = spacecraft   
 
+    msc_dict['bac_tscs'] = bac_tscs_vals[time_mask,:]
+    msc_dict['bac_fac'] = bac_fac_vals[time_mask,:] 
+
+    msc_dict['cal_freq'] = data_dict['cal_freq']
+    msc_dict['imag_cal'] = data_dict['imag_cal']
+    msc_dict['real_cal'] = data_dict['real_cal']
+
+    
     return msc_dict
 

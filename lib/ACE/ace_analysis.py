@@ -1,11 +1,11 @@
-from lib.ACE.ace_data_loading import *
+from .ace_data_loading import *
 import copy
 import datetime as dt
 import matplotlib.pyplot as plt
 from matplotlib import colors, ticker
 import numpy as np
 import pandas as pd
-from lib.general.misc_functions import determine_datetime_type
+from ..general.misc_functions import determine_datetime_type
 
 
 

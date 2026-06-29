@@ -53,93 +53,112 @@ def retrieve_efi_data(year,month,day,spacecraft,level,local_dir=None,data_prod=N
         base_url = f'https://tracers-portal.physics.uiowa.edu/teams/flight/EFI/{level}_public/ts{spacecraft}'
         date_url = f'{base_url}/{year}/{month}/{day}'
         print(date_url)
-        page = requests.get(date_url,auth=(username, password))
-        data = page.text
-        soup = BeautifulSoup(data,"html.parser")
-        ds = f'{year}{month}{day}'
-        all_strings = soup.find_all('a')
-        idx_eac = []
-        idx_ehf = []
-        idx_hsk = []
-        idx_vdc = []
-        for i in range(len(all_strings)):
-            string_name = all_strings[i].get('href')
-            if string_name is not None:
-                if ds in string_name:
-                    if 'eac' in string_name:
-                        idx_eac.append(i)
-                    elif 'ehf' in string_name:
-                        idx_ehf.append(i)
-                    elif 'hsk' in string_name:
-                        idx_hsk.append(i)
-                    elif 'vdc' in string_name:
-                        idx_vdc.append(i)
-    
+        page = requests.get(date_url,auth=(username, password))   
         
-        # Retrieve EAC ----------------------------------------------
-        if 'eac' in data_prod:
-            if len(idx_eac) > 0:
-                day_file = all_strings[idx_eac[-1]].get('href')
-                sys.stdout.write('\nDownloading '+f'{day_file}'+'\n')
-                file_url_path = date_url + '/' + day_file
-                local_file_path = local_dir + '/' + day_file            
-                r = requests.get(file_url_path,auth=(username, password))
-                with open(local_file_path,'wb') as df:
-                    df.write(r.content)  
-            else:
-                ymd = f'{year}-{month}-{day}'
-                print(f"No EFI {spacecraft.upper()} EAC files for {ymd}!")  
-                            
-        
-        # Retrieve VDC ----------------------------------------------
-        if 'vdc' in data_prod:
-            if len(idx_vdc) > 0:
-                vdc_file = all_strings[idx_vdc[-1]].get('href')
-                sys.stdout.write('\nDownloading '+f'{vdc_file}'+'\n')
-                file_url_path = date_url + '/' + vdc_file
-                local_file_path = local_dir + '/' + vdc_file            
-                r = requests.get(file_url_path,auth=(username, password))
-                with open(local_file_path,'wb') as df:
-                    df.write(r.content)
-            else:
-                ymd = f'{year}-{month}-{day}'
-                print(f"No EFI {spacecraft.upper()} VDC files for {ymd}!")  
-                
-        
-        # Retrieve HSK ----------------------------------------------
-        if 'hsk' in data_prod:
-            if len(idx_hsk) > 0:
-                hsk_file = all_strings[idx_hsk[-1]].get('href')
-                sys.stdout.write('\nDownloading '+f'{hsk_file}'+'\n')
-                file_url_path = date_url + '/' + hsk_file
-                local_file_path = local_dir + '/' + hsk_file            
-                r = requests.get(file_url_path,auth=(username, password))
-                with open(local_file_path,'wb') as df:
-                    df.write(r.content)
-            else:
-                ymd = f'{year}-{month}-{day}'
-                print(f"No EFI {spacecraft.upper()} HSK files for {ymd}!")  
-    
-    
-        # Retrieve EHF ----------------------------------------------
-        if 'ehf' in data_prod:
-            if len(idx_ehf) > 0:
-                ehf_file = all_strings[idx_ehf[-1]].get('href')
-                sys.stdout.write('\nDownloading '+f'{ehf_file}'+'\n')
-                file_url_path = date_url + '/' + ehf_file
-                local_file_path = local_dir + '/' + ehf_file            
-                r = requests.get(file_url_path,auth=(username, password))
-                with open(local_file_path,'wb') as df:
-                    df.write(r.content)
-            else:
-                ymd = f'{year}-{month}-{day}'
-                print(f"No EFI {spacecraft.upper()} EHF files for {ymd}!")  
-
     # ++++++++++++++++++++++++++++++++++++++++++++
     # ---------------- FOR PUBLIC ----------------
     # ++++++++++++++++++++++++++++++++++++++++++++
     else:
-        print('Currently no public facing EFI data :(')
+        base_url = f'https://tracers-portal.physics.uiowa.edu/{level.upper()}/TS{spacecraft}'
+        date_url = f'{base_url}/{year}/{month}/{day}'
+        print(date_url)
+        page = requests.get(date_url)    
+
+    data = page.text
+    soup = BeautifulSoup(data,"html.parser")
+    ds = f'{year}{month}{day}'
+    all_strings = soup.find_all('a')
+    idx_eac = []
+    idx_ehf = []
+    idx_hsk = []
+    idx_vdc = []
+    for i in range(len(all_strings)):
+        string_name = all_strings[i].get('href')
+        if string_name is not None:
+            if ds in string_name:
+                if 'eac' in string_name:
+                    idx_eac.append(i)
+                elif 'ehf' in string_name:
+                    idx_ehf.append(i)
+                elif 'hsk' in string_name:
+                    idx_hsk.append(i)
+                elif 'vdc' in string_name:
+                    idx_vdc.append(i)
+    
+    # Retrieve EAC ----------------------------------------------
+    if 'eac' in data_prod:
+        if len(idx_eac) > 0:
+            day_file = all_strings[idx_eac[-1]].get('href')
+            sys.stdout.write('\nDownloading '+f'{day_file}'+'\n')
+            file_url_path = date_url + '/' + day_file
+            local_file_path = local_dir + '/' + day_file 
+            if username is not None:
+                r = requests.get(file_url_path,auth=(username, password))
+            else:
+                r = requests.get(file_url_path)
+                
+            with open(local_file_path,'wb') as df:
+                df.write(r.content)  
+        else:
+            ymd = f'{year}-{month}-{day}'
+            print(f"No EFI {spacecraft.upper()} EAC files for {ymd}!")  
+                        
+    
+    # Retrieve VDC ----------------------------------------------
+    if 'vdc' in data_prod:
+        if len(idx_vdc) > 0:
+            vdc_file = all_strings[idx_vdc[-1]].get('href')
+            sys.stdout.write('\nDownloading '+f'{vdc_file}'+'\n')
+            file_url_path = date_url + '/' + vdc_file
+            local_file_path = local_dir + '/' + vdc_file            
+            if username is not None:
+                r = requests.get(file_url_path,auth=(username, password))
+            else:
+                r = requests.get(file_url_path)
+                
+            with open(local_file_path,'wb') as df:
+                df.write(r.content)
+        else:
+            ymd = f'{year}-{month}-{day}'
+            print(f"No EFI {spacecraft.upper()} VDC files for {ymd}!")  
+            
+    
+    # Retrieve HSK ----------------------------------------------
+    if 'hsk' in data_prod:
+        if len(idx_hsk) > 0:
+            hsk_file = all_strings[idx_hsk[-1]].get('href')
+            sys.stdout.write('\nDownloading '+f'{hsk_file}'+'\n')
+            file_url_path = date_url + '/' + hsk_file
+            local_file_path = local_dir + '/' + hsk_file            
+            if username is not None:
+                r = requests.get(file_url_path,auth=(username, password))
+            else:
+                r = requests.get(file_url_path)            
+            with open(local_file_path,'wb') as df:
+                df.write(r.content)
+        else:
+            ymd = f'{year}-{month}-{day}'
+            print(f"No EFI {spacecraft.upper()} HSK files for {ymd}!")  
+
+
+    # Retrieve EHF ----------------------------------------------
+    if 'ehf' in data_prod:
+        if len(idx_ehf) > 0:
+            ehf_file = all_strings[idx_ehf[-1]].get('href')
+            sys.stdout.write('\nDownloading '+f'{ehf_file}'+'\n')
+            file_url_path = date_url + '/' + ehf_file
+            local_file_path = local_dir + '/' + ehf_file            
+            if username is not None:
+                r = requests.get(file_url_path,auth=(username, password))
+            else:
+                r = requests.get(file_url_path)            
+            with open(local_file_path,'wb') as df:
+                df.write(r.content)
+        else:
+            ymd = f'{year}-{month}-{day}'
+            print(f"No EFI {spacecraft.upper()} EHF files for {ymd}!")  
+
+
     
     return None 
 

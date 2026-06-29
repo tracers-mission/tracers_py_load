@@ -4,7 +4,7 @@ from ..general.misc_functions import time_res_f
 
 
 
-def plot_efi_eac_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency (Hz)',
+def plot_efi_eac_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency [Hz]',
                       xlabel=None, zlim=(1e-12, 1e-10), time_res=None):
     spacecraft = efi['spacecraft']
     dt_new = efi['eac']['Epoch']
@@ -18,7 +18,7 @@ def plot_efi_eac_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency (Hz)',
                      efi['eac'][f'{spacecraft}_l2_eac_x_spec'].T,
                      cmap=cmap, norm='log', vmin=zlim[0], vmax=zlim[1])
     cbax = ax.inset_axes([1.01,0,0.03,1],transform=ax.transAxes)
-    cb = plt.colorbar(im, cax=cbax, label='$(V/m)^2/Hz$')
+    cb = plt.colorbar(im, cax=cbax, label='(V/m)$^2$/Hz')
 
     if title is not None:
         ax.set_title(title)
@@ -33,13 +33,14 @@ def plot_efi_eac_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency (Hz)',
 
     if time_res is not None:
         ax = time_res_f(ax, dt_new, time_res)
+    ax.set_xlim([efi['start'], efi['end']])
 
     return ax
 
 
     
 
-def plot_efi_eac_ts(efi,ax=None,cmap='jet',title=None,ylabel='$E$ (V/m)',
+def plot_efi_eac_ts(efi,ax=None,cmap='jet',title=None,ylabel='Electric Field [V/m]',
                       xlabel=None,time_res=None):
     spacecraft = efi['spacecraft']
     dt_new = efi['eac']['Epoch']
@@ -48,7 +49,8 @@ def plot_efi_eac_ts(efi,ax=None,cmap='jet',title=None,ylabel='$E$ (V/m)',
         fig = plt.figure()
         ax = fig.add_subplot(111)
         
-    pl=ax.plot(efi['eac']['Epoch'], efi['eac'][f'{spacecraft}_l2_eac'])
+    ax.plot(efi['eac']['Epoch'], efi['eac'][f'{spacecraft}_l2_eac'][:,0],label='E$_{X,TSCS}$',c='blue')
+    ax.plot(efi['eac']['Epoch'], efi['eac'][f'{spacecraft}_l2_eac'][:,1],label='E$_{Y,TSCS}$',c='red')
 
     if title is not None:
         ax.set_title(title)
@@ -63,12 +65,14 @@ def plot_efi_eac_ts(efi,ax=None,cmap='jet',title=None,ylabel='$E$ (V/m)',
 
     if time_res is not None:
         ax = time_res_f(ax, dt_new, time_res)
+    ax.set_xlim([efi['start'], efi['end']])
+    ax.legend(frameon=False)
 
     return ax
 
 
 
-def plot_efi_ehf_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency (kHz)',
+def plot_efi_ehf_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency [Hz]',
                       xlabel=None, zlim=(1e-17, 1e-11),time_res=None):
     spacecraft = efi['spacecraft']
     dt_new = efi['ehf']['Epoch']
@@ -81,7 +85,7 @@ def plot_efi_ehf_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency (kHz)'
                      efi['ehf'][f'{spacecraft}_l2_hf_spec'].T,
                      cmap=cmap, norm='log', vmin=zlim[0], vmax=zlim[1])
     cbax = ax.inset_axes([1.01,0,0.03,1],transform=ax.transAxes)
-    cb = plt.colorbar(im, cax=cbax, label='$(V/m)^2/Hz$')
+    cb = plt.colorbar(im, cax=cbax, label='(V/m)$^2$/Hz')
 
     if time_res is not None:
         ax = time_res_f(ax, dt_new, time_res)
@@ -97,12 +101,13 @@ def plot_efi_ehf_spec(efi,ax=None,cmap='jet',title=None,ylabel='Frequency (kHz)'
     if ylabel is not None:
         ax.set_ylabel(ylabel)
 
+    ax.set_xlim([efi['start'], efi['end']])
 
     return ax
 
 
 
-def plot_efi_ehf_ts(efi,ax=None,cmap='jet',title=None,ylabel='$E$ (V/m)',
+def plot_efi_ehf_ts(efi,ax=None,cmap='jet',title=None,ylabel='$E$ [V/m]',
                       xlabel=None,time_res=None):
     spacecraft = efi['spacecraft']
     dt_new = efi['ehf']['Epoch']
@@ -126,6 +131,7 @@ def plot_efi_ehf_ts(efi,ax=None,cmap='jet',title=None,ylabel='$E$ (V/m)',
 
     if time_res is not None:
         ax = time_res_f(ax, dt_new, time_res)
+    ax.set_xlim([efi['start'], efi['end']])
 
     return ax
 
@@ -152,6 +158,41 @@ def plot_efi_hsk(efi,ax=None,time_res=None,variable=None):
     if ax is None:
         fig = plt.figure()
         ax = fig.add_subplot(111)
+    if time_res is not None:
+        ax = time_res_f(ax, dt_new, time_res)
         
     pl=ax.plot(dt_new, efi['ehf'][variable])
+    ax.set_xlim([efi['start'], efi['end']])
+    return ax
+
+
+def plot_efi_vdc_ts(efi,ax=None,time_res=None,title=None):
+
+    spacecraft = efi['spacecraft']
+    
+    dt_new = efi['vdc']['Epoch']
+    
+    xm = efi['vdc'][f'{spacecraft}_l2_vdc_xminus']
+    xp = efi['vdc'][f'{spacecraft}_l2_vdc_xplus']
+
+    ym = efi['vdc'][f'{spacecraft}_l2_vdc_yminus']
+    yp = efi['vdc'][f'{spacecraft}_l2_vdc_yplus']
+
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+    if time_res is not None:
+        ax = time_res_f(ax, dt_new, time_res)
+    if title is None:
+        title = f'{spacecraft.upper()} DC Antenna Voltage'
+        
+    ax.plot(dt_new, xm, label='- X')
+    ax.plot(dt_new, xp, label='+ X')
+    ax.plot(dt_new, ym, label='- Y')
+    ax.plot(dt_new, yp, label='+ Y')    
+    ax.set_ylabel('Voltage [V]')
+    ax.set_xlim([efi['start'], efi['end']])
+    ax.legend(frameon=False,ncols=4,loc='upper center')
+    ax.set_title(title)
+
     return ax

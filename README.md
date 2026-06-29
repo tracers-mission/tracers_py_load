@@ -11,7 +11,7 @@ The Analyzer for Cusp Electrons (ACE) is an electrostatic analyzer with a field 
 
 ACE has two scientific data products: Level 2 and Level 3. Level 2 data are the raw counts, background counts, and differential energy fluxes measured by ACE's 21 discrete anodes and 49 calibrated energy steps within BOR and ROI. Each anode has 10 degree resolution, and each energy channel exhibits 19% intrinsic resolution. Level 3 products are pitch angle distributions derived from ACE L2 and Magnetometer (MAG) L1B data and are subdivided into 18 pitch angle bins and 49 calibrated energy steps. Pitch angles span 0 - 180 degrees and exhibit 10 degree resolution.
 
-**Note**: ACE-1 is not fully commissioned and has extremely sparse measurements in the southern cusp. ACE-2 is fully commissioned and has been operative for the duration of the TRACERS mission in both BOR and ROI periods.
+**Note**: ACE-1 began taking ROI measurements in the southern cusp on a regular basis starting in late March 2026. ACE-2 is fully commissioned and has been operative for the duration of the TRACERS mission in both BOR and ROI periods.
 
 ### ACI
 The Analyzer for Cusp Ions (ACI) is a toroidal tophat electrostatic analyzer with a field of view of 360 x 6 degrees that measures ions with energies spanning ~8 - 20,000 eV [(Fuselier et al., 2025)](https://link.springer.com/article/10.1007/s11214-025-01154-w). ACI collects data every 312 ms in ROI and every ~40 s in BOR. 
@@ -33,7 +33,7 @@ The Magnetometer (MAG) is a triaxial fluxgate magnetometer capable of measuring 
 ### MAGIC
 The MAGnetometers for Innovation and Capability (MAGIC) is a triaxial fluxgate magnetometer onboard the TRACERS spacecraft with the primary objective as a technology demonstration [(Miles et al., 2025)](https://link.springer.com/article/10.1007/s11214-025-01191-5). MAGIC measures DC vector magnetic fields every 0.0078 s with 10 nT resolution. 
 
-**Note**: MAGIC-1 was operated for a short period at the beginning of TRACERS-1 commissioning (September 24, 2025) and was subsequently turned off (December 16, 2025). MAGIC-2 has been in full operation on TRACERS-2 for the duration of the mission.
+**Note**: MAGIC-1 was operated for a short period at the beginning of TRACERS-1 commissioning (September 24, 2025) and was subsequently turned off (December 16, 2025). MAGIC-1 was powered back on for tandem ROI operations on March 31, 2026 and has been operational since. MAGIC-2 has been in full operation on TRACERS-2 for the duration of the mission.
 
 ### MSC
 The Magnetic Search Coil (MSC) onboard each TRACERS spacecraft provides three magnetic components of waves from ∼1 Hz to 1 kHz [(Hospodarsky et al., 2025)](https://link.springer.com/article/10.1007/s11214-025-01200-7). MSC has a sensitivity of 	

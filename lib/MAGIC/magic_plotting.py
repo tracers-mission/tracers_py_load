@@ -34,6 +34,6 @@ def plot_magic_ts(magic_dict,ax=None,coords='gei2000',time_res=None,title=None,\
 
 
     ax.set_xlim([magic_dict['start_time'], magic_dict['end_time']])
-    ax.legend()
+    ax.legend(frameon=False)
 
     return ax

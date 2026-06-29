@@ -5,7 +5,7 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 import requests
-
+from scipy.interpolate import interp1d
 
 def check_file_version(year,month,day,spacecraft,level,instrument):
     if instrument.lower() == 'magic':
@@ -112,6 +112,48 @@ class getTime:
         eds =  f'{self.end.year}-{self.end.month:02}-{self.end.day}'
         self.date_list = pd.date_range(sds,eds,freq='D').strftime("%Y/%m/%d").tolist()
         self.date_strings = pd.date_range(sds,eds,freq='D').strftime("%Y%m%d").tolist()
+
+
+
+
+
+def interpolate_mlt(utc, mlt, new_times):
+    """
+    This function interpolates magnetic local time from EAD files onto a new time series.
+    This interpolation takes care of the discontinuity that occurs going from 23 --> 1 h.
+    Inputs:
+    UTC = seconds since 1/1/1970
+    MLT = array of magnetic local times
+    new_times = array of UTC times you want new MLT values at
+    Returns:
+    Array of interpolated MLT values with same shape as new_times
+    """
+    # Need to do some conversions of MLT to make sure interpolation goes correctly from 23 --> 1
+    angles = 2.*np.pi*mlt/24.
+    xx = np.cos(angles)
+    yy = np.sin(angles)
+    fx = interp1d(utc, xx, kind='linear')
+    fy = interp1d(utc, yy, kind='linear')
+    x_new = fx(new_times)
+    y_new = fy(new_times)
+    angles_new = np.arctan2(y_new, x_new)
+    interp_mlt = (angles_new*24./(2.*np.pi)) % 24.
+    return interp_mlt
+
+
+def interpolate_mlat(utc, mlat, new_times):
+    """
+    This function interpolates MLAT values from the EAD files onto a new time series.
+    Inputs:
+    UTC = seconds since 1/1/1970
+    MLAT = array of magnetic latitudes
+    new_times = array of UTC times you want new MLAT values at
+    Returns:
+    Array of interpolated MLAT values with same shape as new_times
+    """
+    mlat_interp_func = interp1d(utc, mlat, kind='linear')
+    interp_mlat = mlat_interp_func(new_times)
+    return interp_mlat
 
 
 

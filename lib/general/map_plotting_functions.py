@@ -3,7 +3,7 @@ from cartopy.feature.nightshade import Nightshade
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.general.ead_file_loading import *
+from .ead_file_loading import *
 
 
 

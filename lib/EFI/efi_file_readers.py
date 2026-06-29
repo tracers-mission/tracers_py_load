@@ -16,12 +16,15 @@ def _read_efi_l2_eac(file, start, end):
 
     ddict = {}
     ddict['Epoch'] = cdf['Epoch'][start_ind_ts:end_ind_ts]
-    ddict[f'{sc}_l2_eac'] = cdf[f'{sc}_l2_eac'][start_ind_ts:end_ind_ts,:]
+    ddict[f'{sc}_l2_eac'] = cdf[f'{sc}_l2_eac_TSCS'][start_ind_ts:end_ind_ts,:]
 
     ddict['Frequency'] = cdf['Frequency']
     ddict[f'{sc}_l2_eac_packet_start'] = cdf[f'{sc}_l2_eac_packet_start'][start_ind_spec:end_ind_spec]
     ddict[f'{sc}_l2_eac_x_spec'] = cdf[f'{sc}_l2_eac_x_spec'][start_ind_spec:end_ind_spec]
     ddict[f'{sc}_l2_eac_y_spec'] = cdf[f'{sc}_l2_eac_y_spec'][start_ind_spec:end_ind_spec]
+    
+    ddict[f'{sc}_eac_x_calibration'] = cdf[f'{sc}_eac_x_calibration']
+    ddict[f'{sc}_eac_y_calibration'] = cdf[f'{sc}_eac_y_calibration']
     
     return ddict
 
@@ -58,7 +61,10 @@ def _read_efi_l2_ehf(file, start, end):
 
     start_ind_spec = bisect.bisect_left(cdf[f'{sc}_l2_ehf_snapshot_start'], start)
     end_ind_spec = bisect.bisect_left(cdf[f'{sc}_l2_ehf_snapshot_start'], end)
-
+    if start_ind_spec != 0:
+        start_ind_spec = start_ind_spec - 1
+    if end_ind_spec != len(cdf[f'{sc}_l2_ehf_snapshot_start'])-1:
+        end_ind_spec = end_ind_spec + 1
     
     ddict = {}
     ddict['Epoch'] = cdf['Epoch'][start_ind:end_ind]
@@ -110,6 +116,8 @@ def read_efi_l2_files(files2load,start=None,end=None,data_prod=None):
     data_dict = {}
     spacecraft = (files2load[0].split('/')[-1]).split('_')[0]
     data_dict['spacecraft'] = spacecraft
+    data_dict['start'] =  start
+    data_dict['end'] = end
     if data_prod is None:
         data_prod = 'eac'
     for dp in data_prod.split('+'):

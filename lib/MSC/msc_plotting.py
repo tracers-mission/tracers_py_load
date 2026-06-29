@@ -3,6 +3,7 @@ import datetime as dt
 from matplotlib import colors
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.interpolate import interp1d
 import warnings
 
 from ..general.misc_functions import time_res_f
@@ -72,6 +73,10 @@ def plot_msc_l2_psd(msc_dict, ax=None, cmap='jet', coords='tscs',  component='x'
     ax: axis object from matplotlib 
     cmap: python colormap; default is jet
     coords: TSCS or FAC; default is TSCS. FAC often lacks data due to bad attitude solution.
+        X_FAC: Y_FAC X Z_FAC to complete the right-handed system
+        Y_FAC: Z_FAC x Earth-to-spacecraft-vector (Eastward)
+        Z_FAC: along IGRF model magnetic field at spacecraft
+    
     component: name of B field component you wish to plot ('x','y',or 'z'); default is x
     nfft: window size; default is 512 timestamps
     time_res: Resolution of time ticks. Example input would be time_res='60s'.
@@ -115,8 +120,50 @@ def plot_msc_l2_psd(msc_dict, ax=None, cmap='jet', coords='tscs',  component='x'
         t_new=t_new[0:-1]
         fft = fft[0:-1]
 
+
+    # --------------------- Calibrating FFT
+    freq_cal = msc_dict['cal_freq']
+    real_cal = msc_dict['real_cal']
+    imag_cal = msc_dict['imag_cal']
+    
+    cal_vals = real_cal + 1j*imag_cal
+    amplitude = abs(cal_vals)
+    phase = np.atan2(imag_cal, real_cal)    
+
+    interp_amp_f = interp1d(freq_cal, amplitude)
+    interp_phase_f = interp1d(freq_cal, phase)        
+
+
+    cal = np.zeros(len(freq),dtype=complex)
+    for i in range(len(freq)):
+        f_interp = freq[i]
+        if f_interp == 0:
+            cal[i] = 1.+ 1j*0.
+        elif f_interp > 0:
+            cal_amp_calc = interp_amp_f(f_interp)
+            cal_pha_calc = interp_phase_f(f_interp)
+            if f_interp < max(freq_cal):
+                cal[i] = cal_amp_calc*(np.cos(cal_pha_calc) + 1j*np.sin(cal_pha_calc))
+            else:
+                cal[i] = 1. + 1j*0
+        else:
+            f_interp = abs(freq[i])
+            cal_amp_calc = interp_amp_f(f_interp)
+            cal_pha_calc = interp_phase_f(f_interp)
+            if f_interp < max(freq_cal):
+                cal[i] = np.conjugate(cal_amp_calc*(np.cos(cal_pha_calc) + 1j*np.sin(cal_pha_calc)))
+            else:
+                cal[i] = 1. + 1j*0    
+
+    cal_fft = np.zeros(np.shape(fft))
+    cal_fft[:,:,0] = fft[:,:,0]/cal
+    cal_fft[:,:,1] = fft[:,:,1]/cal
+    cal_fft[:,:,2] = fft[:,:,2]/cal
+    
+
     # ------------------- Computing power spectral density in nT**2/Hz for each component
-    power_spectral_density = (np.abs(fft)**2)/(2*freq[1])
+    power_spectral_density = (np.abs(cal_fft)**2)/(2*freq[1])
+    power_spectral_density[:,0,:] = 0 # throwing out zero frequency channel
     
     # ------------------- Getting plot
 
@@ -136,11 +183,14 @@ def plot_msc_l2_psd(msc_dict, ax=None, cmap='jet', coords='tscs',  component='x'
     if component.lower() == 'z':
         bdata = power_spectral_density[:,:,2]
 
-    cb = ax.pcolormesh(time_xx, frequency_yy, bdata.T, cmap=cmap, norm=colors.LogNorm(vmin=1e-10,vmax=1e-2))
+    im = ax.pcolormesh(time_xx, frequency_yy, bdata.T, cmap=cmap, norm=colors.LogNorm(vmin=1e-10,vmax=1e-2))
     ax.set_ylabel('Frequency [Hz]')
-    plt.colorbar(cb,ax=ax,label=r'Power Spectral Density [nT$^2$/Hz]')
+    cbax = ax.inset_axes([1.02,0,0.03,1],transform=ax.transAxes)
+    cb = plt.colorbar(im,cax=cbax,label=r'Power Spectral Density [nT$^2$/Hz]')
+
     if title is None:
-        ax.set_title(rf'{spacecraft.upper()} Power Spectral Density: B$_{component}$, {coords.upper()}')
+        title = rf'{spacecraft.upper()} Power Spectral Density: B$_{component}$, {coords.upper()}'
+    ax.set_title(title)
     ax.set_xlim([msc_dict['start_time'], msc_dict['end_time']])
     ax.set_ylabel('Frequency [Hz]')
 
