@@ -4,7 +4,7 @@ import numpy as np
 
 def plot_geopack_trace(r, yyyymmdd, hh, az=70, elev=35,
                        ax=None, cmap='viridis',model='TS05',return_full=False,
-                       labels=False, legend=False):
+                       labels=False, legend=False, alt=None):
     '''
     Given a series of position vectors, trace the field line of each position and plot it.
     Defaults to using a Tsyganenko-Sitnov 05 magnetic field model.
@@ -21,11 +21,14 @@ def plot_geopack_trace(r, yyyymmdd, hh, az=70, elev=35,
                   Useful for getting the footprints and equatorial local time
      labels: Associate lines with labels. List of strings of length N need to be input to label each line.
      legend: Place legend on axes. 
+     alt: If provided, plot the field lines footpoints to a given altitude in km. 
+                Otherwise, trace to the ionosphere (100 km).
 
     '''
+     alt =100.0 if alt is None else alt
     RE = 6378.0; # Earth radius in km
     T = gp.TraceField(r[:,0]/RE , r[:,1]/RE, r[:,2]/RE,
-                      yyyymmdd,hh,Model=model,CoordIn='SM',CoordOut='SM')
+                      yyyymmdd,hh,Model=model,CoordIn='SM',CoordOut='SM', alt=alt/RE)
 
     
     if not ax:
