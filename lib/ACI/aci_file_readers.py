@@ -31,7 +31,7 @@ def read_aci_l2_files(files2load, start=None, end=None):
 
         # Angle at the center of each ACI anode in the spacecraft frame. 
         # (Tracers Satellite Coordinate System)
-        anode_angle_var = f'{spacecraft}_l2_aci_tscs_anode_angle'
+        anode_angle_var = f'{spacecraft}_l2_aci_tscs_anode_ion_vel_dir'
         anode_angle = cdf_file[anode_angle_var] # anode angles from the +Z axis in TSCS
 
         
