@@ -113,31 +113,38 @@ def read_mag_l2_files(files2load, spacecraft, \
     tsvy = np.array([x for elem in data_dict['TS_vy'] for x in elem])
     tsvz = np.array([x for elem in data_dict['TS_vz'] for x in elem])
 
+
+    start_time = (start - dt.datetime(1970,1,1)).total_seconds()
+    end_time = (end - dt.datetime(1970,1,1)).total_seconds()
+    
+    time_mask = (times >= start_time)&(times <= end_time) 
+
+    time_1sps_mask = (times_1sps >= start_time)&(times_1sps <= end_time)
     
     mag_dict = {'DT':[],'DT_1sps':[]}
-    mag_dict['UTC'] = times
-    mag_dict['UTC_1sps'] = times_1sps
+    mag_dict['UTC'] = times[time_mask]
+    mag_dict['UTC_1sps'] = times_1sps[time_1sps_mask]
     
-    mag_dict['Bx'] = bx
-    mag_dict['By'] = by
-    mag_dict['Bz'] = bz
-    mag_dict['|B|'] = np.sqrt(bx**2 + by**2 + bz**2)
+    mag_dict['Bx'] = bx[time_mask]
+    mag_dict['By'] = by[time_mask]
+    mag_dict['Bz'] = bz[time_mask]
+    mag_dict['|B|'] = np.sqrt((bx[time_mask])**2 + (by[time_mask])**2 + (bz[time_mask])**2)
 
-    mag_dict['deltaBx'] = deltabx
-    mag_dict['deltaBy'] = deltaby
-    mag_dict['deltaBz'] = deltabz
+    mag_dict['deltaBx'] = deltabx[time_mask]
+    mag_dict['deltaBy'] = deltaby[time_mask]
+    mag_dict['deltaBz'] = deltabz[time_mask]
 
-    mag_dict['IGRFx'] = igrfx
-    mag_dict['IGRFy'] = igrfy
-    mag_dict['IGRFz'] = igrfz
+    mag_dict['IGRFx'] = igrfx[time_1sps_mask]
+    mag_dict['IGRFy'] = igrfy[time_1sps_mask]
+    mag_dict['IGRFz'] = igrfz[time_1sps_mask]
 
-    mag_dict['TSx'] = tsx
-    mag_dict['TSy'] = tsy
-    mag_dict['TSz'] = tsz
+    mag_dict['TSx'] = tsx[time_1sps_mask]
+    mag_dict['TSy'] = tsy[time_1sps_mask]
+    mag_dict['TSz'] = tsz[time_1sps_mask]
 
-    mag_dict['TSvx'] = tsvx
-    mag_dict['TSvy'] = tsvy
-    mag_dict['TSvz'] = tsvz
+    mag_dict['TSvx'] = tsvx[time_1sps_mask]
+    mag_dict['TSvy'] = tsvy[time_1sps_mask]
+    mag_dict['TSvz'] = tsvz[time_1sps_mask]
     
     mag_dict['Attitude Coordinates'] = att_coords
     mag_dict['B Coordinates'] = b_coords
