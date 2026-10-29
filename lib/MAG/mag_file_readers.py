@@ -40,11 +40,17 @@ def read_mag_l2_files(files2load, spacecraft, \
 
         s_j2000_1sps = mag_data[f'ts{spacecraft}_l2_mag_1sps_epoch']/1e9 # seconds since jan 1 2000
         
-        # Converting from nonsensical time to UTC.
-        # These are the times at the midpoint of each energy sweep.
-        utcs = np.array([((dt.datetime(2000,1,1) + dt.timedelta(seconds=x)) - dt.datetime(1970,1,1)).total_seconds() for x in s_j2000])    
+        epoch_16sps = mag_data[f'ts{spacecraft}_l2_mag_16sps_epoch']
+        epoch_1sps = mag_data[f'ts{spacecraft}_l2_mag_1sps_epoch']
+        
+        # Convert CDF TT2000 epochs to datetime64 timestamps
+        time_16sps = cdflib.cdfepoch.to_datetime(epoch_16sps)
+        time_1sps = cdflib.cdfepoch.to_datetime(epoch_1sps)
+        
+        # Convert datetime64 to Unix seconds (UTC)
+        utcs = (time_16sps.astype('datetime64[ns]').astype('int64') / 1e9)
+        utc_1sps = (time_1sps.astype('datetime64[ns]').astype('int64') / 1e9)
 
-        utc_1sps = np.array([((dt.datetime(2000,1,1) + dt.timedelta(seconds=x)) - dt.datetime(1970,1,1)).total_seconds() for x in s_j2000_1sps]) 
 
     
         # Time x 3 (B total)
