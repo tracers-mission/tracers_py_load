@@ -120,28 +120,3 @@ def read_magic_l2_files(files2load,start=None,end=None):
 
     return magic_dict
 
-
-
-
-
-
-
-
-
-
-
-    
-    
-    # return ddict
-    # sc = 'ts'+(file.split('ts')[1]).split('_')[0]
-    # cdf = pycdf.CDF(file)
-    # start_ind = bisect.bisect_left(cdf['Epoch'], start)
-    # end_ind = bisect.bisect_right(cdf['Epoch'], end)
-
-    #     ddict = {}
-    # ddict['Epoch'] = cdf['Epoch'][start_ind:end_ind]
-    # ddict['Quality Flag'] = cdf[f'{sc}_l2_magic_b_flag_qual'][start_ind:end_ind]
-    # ddict[f'{sc}_l2_magic_gei2000_bdc'] = cdf[f'{sc}_l2_magic_gei2000_bdc'][start_ind:end_ind,:]
-    # ddict[f'{sc}_l2_magic_{sc}_magic_bdc'] = cdf[f'{sc}_l2_magic_{sc}_magic_bdc'][start_ind:end_ind,:]
-    # ddict[f'{sc}_l2_magic_{sc}_nec_bdc'] = cdf[f'{sc}_l2_magic_{sc}_nec_bdc'][start_ind:end_ind,:]
-    # ddict['spacecraft'] = sc

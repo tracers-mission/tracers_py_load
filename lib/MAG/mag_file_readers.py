@@ -159,5 +159,6 @@ def read_mag_l2_files(files2load, spacecraft, \
         
     mag_dict['start_time'] = start
     mag_dict['end_time'] = end
-
+    mag_dict['spacecraft'] = spacecraft
+    
     return mag_dict

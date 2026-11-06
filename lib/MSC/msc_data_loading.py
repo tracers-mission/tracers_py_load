@@ -90,11 +90,16 @@ def retrieve_msc_data(year,month,day,spacecraft,level,local_dir=None):
 
 
 class MSC_L2(getTime):
-    """This class will initiate and load MSC L2 data. Inputs are start and stop time in string format, as well as
+    """
+    This class will initiate and load MSC L2 data. Inputs are start and stop time in string format, as well as
     the spacecraft you wish to analyze ('1' or '2'). After initializing the class, load the data by employing read_data().
 
     
     Keys: 'DT', 'UTC',  'bac_tscs', 'bac_fac', 'start_time', 'end_time', 'spacecraft'
+
+    TSCS = TRACERS Spacecraft Coordinate System
+    FAC = Field Aligned Coordinates* 
+    * This data may often be missing due to some post-processing issues. The team is working on it.
     
     ex: 
     msc = MSC_L2('2025-11-19/12:00','2025-11-19/13:00','2')

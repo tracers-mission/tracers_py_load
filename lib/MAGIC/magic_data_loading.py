@@ -75,6 +75,20 @@ def retrieve_magic_data(year,month,day,spacecraft,level,local_dir=None):
 
 
 class MAGIC_L2(getTime):
+    """
+    Class that retrieves and loads MAGIC L2 data. Returns dictionary with
+    time series data for each magnetometer axis.
+
+    Required inputs
+    --
+    t0 = time string of observation start time
+    tf = time string of observation end time
+    sc = spacecraft number ('1' or '2')
+
+    ex:
+    magic = MAGIC_L2('2026-01-01/01:00','2026-01-01/01:01','2').read_data()
+    
+    """
     # *******************************************************************
     def __init__(self,t0,tf,spacecraft):
         super().__init__(t0=t0,tf=tf,spacecraft=spacecraft)  

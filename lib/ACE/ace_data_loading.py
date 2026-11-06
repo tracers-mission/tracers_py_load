@@ -119,13 +119,21 @@ def retrieve_ace_data(year,month,day,spacecraft,level,local_dir=None,username=No
 
 # outpath/ts{1 or 2}_l2_ace_def_{datestring}_v{version}.cdf
 class ACE_L2(getTime):
-    """This class will initiate and load ACE L2 data. Inputs are start and stop time in string format, as well as
+    """
+    This class will initiate and load ACE L2 data. Inputs are start and stop time in string format, as well as
     the spacecraft you wish to analyze ('1' or '2'). After initializing the class, load the data by employing read_data().
-
+    Returns dictionary object.
     
     Keys: 'energy', 'def', 'counts', 'bg_counts', 'UTC', 'anode', 'DT', 'start_time', 'end_time', 'spacecraft'
     T x E (49) x 21 (A)
 
+
+    Required inputs
+    -- 
+    t0 = time string of start of observation
+    tf = time string of end of observation
+    sc = spacecraft number ('1' or '2')
+    
     ex: 
     ace = ACE_L2('2025-11-19/12:00','2025-11-19/13:00','2')
     ace_l2 = ace.read_data()
@@ -225,6 +233,25 @@ class ACE_L2(getTime):
 
 
 class ACE_L3(getTime):
+    """
+    This class will initiate and load ACE L3 data. This is pitch angle data dervied from ACE and MAG data. 
+    Inputs are start and stop time in string format, as well as the spacecraft you wish to analyze ('1' or '2'). 
+    After initializing the class, load the data by employing read_data(). Returns dictionary object.
+
+    Keys: 'energy', 'def', 'counts', 'bg_counts', 'UTC', 'pitch_angles', 'DT', 'start_time', 'end_time', 'spacecraft'
+    T x E (49) x 18 (PA)
+
+    Required inputs
+    -- 
+    t0 = time string of start of observation
+    tf = time string of end of observation
+    sc = spacecraft number ('1' or '2')
+    
+    ex: 
+    ace = ACE_L3('2025-11-19/12:00','2025-11-19/13:00','2')
+    ace_l3 = ace.read_data()
+    
+    """
     # *******************************************************************
     def __init__(self,t0,tf,spacecraft):
         super().__init__(t0=t0,tf=tf,spacecraft=spacecraft)   

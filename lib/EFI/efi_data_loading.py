@@ -167,13 +167,19 @@ def retrieve_efi_data(year,month,day,spacecraft,level,local_dir=None,data_prod=N
 
 
 class EFI_L2(getTime):
-    """This class will initiate and load EFI L2 data. Inputs are start and stop time in string format, as well as
+    """
+    This class will initiate and load EFI L2 data. Inputs are start and stop time in string format, as well as
     the spacecraft you wish to analyze ('1' or '2'). After initializing the class, load the data by employing read_data().
+
+    EFI has various L2 products. These include AC spectrograms, AC time series, high-frequency (HF) spectrograms,
+    HF time series, DC attena voltages, and housekeeping (HSK). 
+
+    This script will, by default, load DC voltage and AC electric field data.
 
     ex: 
     efi = EFI_L2('2025-11-19/12:00','2025-11-19/13:00','2')
     efi_l2 = efi.read_data(data_prod='eac+vdc',username='username_info',password='password_here')
-    
+    * viable data_prod inputs are vdc, eac, ehf, or hsk
     """
     # *******************************************************************
     def __init__(self,t0,tf,spacecraft):
